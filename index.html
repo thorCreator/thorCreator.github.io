@@ -1,50 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>thorCreator | 3D Artist</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>thorCreator | 3D Artist</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
 
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            background: radial-gradient(circle at center, #0f0c29, #302b63, #24243e);
-            font-family: 'Orbitron', sans-serif;
-            color: #00ffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            overflow: hidden;
-        }
-        h1 {
-            font-size: 4rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
-        }
-        p {
-            font-size: 1.5rem;
-            margin: 0.5rem;
-            color: #ff00ff;
-            text-shadow: 0 0 5px #ff00ff;
-        }
-        .neon-line {
-            width: 80%;
-            height: 2px;
-            background: linear-gradient(90deg, #00ffff, #ff00ff);
-            margin: 20px 0;
-            box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
-        }
-    </style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, #0f0c29, #302b63, #24243e);
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      color: #00ffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      position: relative;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      z-index: 0;
+    }
+
+    h1, p, .neon-line {
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: 4rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+    }
+
+    p {
+      font-size: 1.5rem;
+      margin: 0.5rem;
+      color: #ff00ff;
+      text-shadow: 0 0 5px #ff00ff;
+    }
+
+    .neon-line {
+      width: 80%;
+      height: 2px;
+      background: linear-gradient(90deg, #00ffff, #ff00ff);
+      margin: 20px 0;
+      box-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
+    }
+  </style>
 </head>
 <body>
-    <h1>thorCreator</h1>
-    <div class="neon-line"></div>
-    <p>3D Artist crafting sci-fi & cyberpunk worlds</p>
-    <p>Assets launching soon...</p>
+  <canvas id="background"></canvas>
+  <h1>thorCreator</h1>
+  <div class="neon-line"></div>
+  <p>3D Artist crafting sci-fi & cyberpunk worlds</p>
+  <p>Assets launching soon...</p>
+
+  <script>
+    const canvas = document.getElementById('background');
+    const ctx = canvas.getContext('2d');
+
+    let width, height;
+    let particles = [];
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.radius = Math.random() * 2;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.speedY = (Math.random() - 0.5) * 0.5;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.x < 0 || this.x > width) this.speedX *= -1;
+        if (this.y < 0 || this.y > height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,255,255,0.7)';
+        ctx.fill();
+      }
+    }
+
+    function initParticles(num) {
+      particles = [];
+      for (let i = 0; i < num; i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+
+    initParticles(100);
+    animate();
+  </script>
 </body>
 </html>
